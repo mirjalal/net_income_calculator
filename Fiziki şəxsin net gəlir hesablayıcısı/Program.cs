@@ -15,14 +15,20 @@ namespace Fiziki_şəxsin_net_gəlir_hesablayıcısı
 			Console.WriteLine();
 
 			decimal transferAmount = PrintMsgAndGetAmount<decimal>("Köçürülən məbləği daxil edin (₼): ");
-			//byte bankComission = PrintMsgAndGetAmount<byte>("Bank faizini daxil edin: ", true, 0);
+			decimal bankComission = PrintMsgAndGetAmount<decimal>("Bank faizini daxil edin (susmaya görə 0%): ", true, (decimal)0.00);
 			decimal taxesComission = PrintMsgAndGetAmount<decimal>("Nağdlaşdırma faizini daxil edin (susmaya görə 1%): ", true, 1);
 			decimal socialComission = PrintMsgAndGetAmount<decimal>("Sosial müdafiə məbləğini daxil edin (susmaya görə 62.5₼): ", true, (decimal)62.5);
 			decimal otherCostsTotal = PrintMsgAndGetAmount<decimal>("Digər xərclərin cəmini daxil edin: ");
 
 			Console.WriteLine();
 
-			decimal totalCosts = (transferAmount - transferAmount * taxesComission / 100 - socialComission - otherCostsTotal) * 5 / 100;
+			decimal totalCosts;
+			Console.WriteLine(bankComission.CompareTo((decimal)0.00) > 0);
+			if (bankComission.CompareTo((decimal)0.00) > 0)
+				totalCosts = (transferAmount - (transferAmount - transferAmount * taxesComission / 100) * bankComission / 100 - socialComission - otherCostsTotal) * 5 / 100;
+			else
+				totalCosts = (transferAmount - transferAmount * taxesComission / 100 - socialComission - otherCostsTotal) * 5 / 100;
+
 			Console.WriteLine($"Xərclərin cəmi: {totalCosts.ToString("C", CultureInfo.CreateSpecificCulture("az-AZ"))}");
 			Console.WriteLine($"Net gəlir: {(transferAmount - totalCosts).ToString("C", CultureInfo.CreateSpecificCulture("az-AZ"))}");
 
