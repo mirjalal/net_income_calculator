@@ -23,7 +23,6 @@ namespace Fiziki_şəxsin_net_gəlir_hesablayıcısı
 			Console.WriteLine();
 
 			decimal totalCosts;
-			Console.WriteLine(bankComission.CompareTo((decimal)0.00) > 0);
 			if (bankComission.CompareTo((decimal)0.00) > 0)
 				totalCosts = (transferAmount - (transferAmount - transferAmount * taxesComission / 100) * bankComission / 100 - socialComission - otherCostsTotal) * 5 / 100;
 			else
