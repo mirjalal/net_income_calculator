@@ -9,27 +9,32 @@ namespace Fiziki_şəxsin_net_gəlir_hesablayıcısı
 		{
 			Console.Clear();
 
+			System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("az-AZ");
+
 			Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 			Console.WriteLine("Fiziki şəxsin net gəlir hesablayıcısı");
 			Console.WriteLine();
 
-			decimal transferAmount = PrintMsgAndGetAmount<decimal>("Köçürülən məbləği daxil edin (₼): ");
-			decimal bankComission = PrintMsgAndGetAmount<decimal>("Bank faizini daxil edin (susmaya görə 0%): ", true, (decimal)0.00);
-			decimal taxesComission = PrintMsgAndGetAmount<decimal>("Nağdlaşdırma faizini daxil edin (susmaya görə 1%): ", true, 1);
-			decimal socialComission = PrintMsgAndGetAmount<decimal>("Sosial müdafiə məbləğini daxil edin (susmaya görə 62.5₼): ", true, (decimal)62.5);
-			decimal otherCostsTotal = PrintMsgAndGetAmount<decimal>("Digər xərclərin cəmini daxil edin: ");
+			decimal kocurmeMeblegi = PrintMsgAndGet<decimal>("Köçürülən məbləği daxil edin (₼): ");
+			decimal bankFaizi = PrintMsgAndGet<decimal>("Bank faizini daxil edin (susmaya görə 0%): ", true, (decimal)0.00);
+			decimal vergiFaizi = PrintMsgAndGet<decimal>("Nağdlaşdırma faizini daxil edin (susmaya görə 1%): ", true, 1);
+			decimal sosial = PrintMsgAndGet<decimal>("Sosial müdafiə məbləğini daxil edin (susmaya görə 62,5₼): ", true, (decimal)62.5);
+			decimal digerXercler = PrintMsgAndGet<decimal>("Digər xərclərin cəmini daxil edin: ");
 
 			Console.WriteLine();
-
 			decimal totalCosts;
-			if (bankComission.CompareTo((decimal)0.00) > 0)
-				totalCosts = (transferAmount - (transferAmount - transferAmount * taxesComission / 100) * bankComission / 100 - socialComission - otherCostsTotal) * 5 / 100;
+			if (bankFaizi.CompareTo((decimal)0.00) > 0)
+				totalCosts = ((kocurmeMeblegi * vergiFaizi / 100) * bankFaizi / 100) + sosial + digerXercler;
 			else
-				totalCosts = (transferAmount - transferAmount * taxesComission / 100 - socialComission - otherCostsTotal) * 5 / 100;
+				totalCosts = (kocurmeMeblegi * vergiFaizi / 100) + sosial + digerXercler;
 
-			Console.WriteLine($"Xərclərin cəmi: {totalCosts.ToString("C", CultureInfo.CreateSpecificCulture("az-AZ"))}");
-			Console.WriteLine($"Net gəlir: {(transferAmount - totalCosts).ToString("C", CultureInfo.CreateSpecificCulture("az-AZ"))}");
+			decimal gelirVergisi = (kocurmeMeblegi - totalCosts) * 5 / 100;
+			decimal hamisi = gelirVergisi + totalCosts;
+
+			Console.WriteLine($"Gəlir vergisi: {gelirVergisi}");
+			Console.WriteLine($"Xərclərin cəmi: {hamisi}");
+			Console.WriteLine($"Yekun net gəlir: {kocurmeMeblegi - hamisi}");
 
 			Console.WriteLine();
 			Console.Write("Yeni hesablama üçün Enter basın.");
@@ -37,7 +42,7 @@ namespace Fiziki_şəxsin_net_gəlir_hesablayıcısı
 				Main(args);
 		}
 
-		private static T PrintMsgAndGetAmount<T>(string msg, bool hasDefaultValue = false, T defaultValue = default) where T : IConvertible, IFormattable
+		private static T PrintMsgAndGet<T>(string msg, bool hasDefaultValue = false, T defaultValue = default) where T : IConvertible, IFormattable
 		{
 			try
 			{
@@ -50,7 +55,7 @@ namespace Fiziki_şəxsin_net_gəlir_hesablayıcısı
 				if (hasDefaultValue)
 					return defaultValue;
 				else
-					return PrintMsgAndGetAmount<T>(msg);
+					return PrintMsgAndGet<T>(msg);
 			}
 		}
 	}
